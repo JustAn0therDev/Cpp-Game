@@ -61,23 +61,20 @@ bool Collided(const sf::RectangleShape& objA, const sf::CircleShape& objB) {
 }
 
 void MoveApple(sf::CircleShape& apple) {
-	// TODO: ROUND THESE VALUES SO THAT THE RECTANGLE CAN MOVE TO THE EXACT SAME POSITION
-	// AS THE APPLE.
-	//std::random_device dev;
-	//std::mt19937 rng(dev());
-	//std::uniform_int_distribution<std::mt19937::result_type> distWidth(10, 1270);
+	std::random_device dev;
+	std::mt19937 rng(dev());
+	std::uniform_int_distribution<std::mt19937::result_type> distWidth(10, 700);
 
-	//float x = distWidth(rng);
+	int x = ceil(distWidth(rng)/10) * 10;
 
-	//std::mt19937 rng2(dev());
-	//std::uniform_int_distribution<std::mt19937::result_type> distHeight(10, 700);
+	std::mt19937 rng2(dev());
+	std::uniform_int_distribution<std::mt19937::result_type> distHeight(10, 500);
 
-	//float y = distHeight(rng2);
+	int y = ceil(distHeight(rng2) / 10) * 10;
 
-	float x = apple.getPosition().x + 10;
-	float y = apple.getPosition().y + 10;
+	std::cout << "Apple's new position is: " << x << " " << y << std::endl;
 
-	apple.move(x, y);
+	apple.setPosition(x, y);
 }
 
 void AddPartToSnake(std::vector<SnakePart>& parts, const Orientation& orientation) {
@@ -91,23 +88,20 @@ void AddPartToSnake(std::vector<SnakePart>& parts, const Orientation& orientatio
 
 	const sf::Vector2f size = last_part.getSize();
 
-	//switch (orientation) {
-	//case Orientation::UP:
-	//	new_snake_part.setPosition(pos.x, pos.y - size.x);
-	//	break;
-	//case Orientation::DOWN:
-	//	new_snake_part.setPosition(pos.x, pos.y + size.x);
-	//	break;
-	//case Orientation::LEFT:
-	//	new_snake_part.setPosition(pos.x - size.x, pos.y);
-	//	break;
-	//case Orientation::RIGHT:
-	//	new_snake_part.setPosition(pos.x + size.x, pos.y);
-	//	break;
-	//}
-
-	// @Testing
-	new_snake_part.setPosition(pos);
+	switch (orientation) {
+	case Orientation::UP:
+		new_snake_part.setPosition(pos.x, pos.y - size.x);
+		break;
+	case Orientation::DOWN:
+		new_snake_part.setPosition(pos.x, pos.y + size.x);
+		break;
+	case Orientation::LEFT:
+		new_snake_part.setPosition(pos.x - size.x, pos.y);
+		break;
+	case Orientation::RIGHT:
+		new_snake_part.setPosition(pos.x + size.x, pos.y);
+		break;
+	}
 
 	parts.push_back(SnakePart(new_snake_part));
 }
@@ -144,9 +138,7 @@ int main() {
 
 		MoveSnakeByOrientation(snake, orientation);
 
-		if (snake.m_Parts.size() > 1) {
-			std::cout << "Snake's part position: " << snake.m_Parts[1].m_Rect.getPosition().x << " " << snake.m_Parts[1].m_Rect.getPosition().y << std::endl;
-		}
+		std::cout << "Snake's head position: " << snake.m_Parts[0].m_Rect.getPosition().x << " " << snake.m_Parts[0].m_Rect.getPosition().y << std::endl;
 		
 		// std::cout << "Apple's position: " << apple.getPosition().x << " " << apple.getPosition().y << std::endl;
 
