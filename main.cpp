@@ -63,8 +63,18 @@ void ChangeOrientation(Orientation& orientation, const sf::Event& event) {
 }
 
 // TODO: make my own collision detection.
-bool Collided(const sf::RectangleShape& objA, const sf::CircleShape& objB) {
+bool Collided(const sf::Shape& objA, const sf::Shape& objB) {
 	return objA.getGlobalBounds().intersects(objB.getGlobalBounds());
+}
+
+bool SnakeCollidedWithItself(const Snake& snake) {
+	for (int i = 1; i < snake.m_Parts.size(); i++) {
+		if (snake.m_Parts[i].m_Rect.getPosition() == snake.m_Parts[0].m_Rect.getPosition()) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void MoveApple(sf::CircleShape& apple) {
@@ -144,9 +154,12 @@ int main() {
 		MoveSnakeByOrientation(snake, orientation);
 
 		if (Collided(snake.m_Parts[0].m_Rect, apple)) {
-			std::cout << "Collision detected!" << std::endl;
 			MoveApple(apple);
 			AddPartToSnake(snake.m_Parts, orientation);
+		}
+		else if (SnakeCollidedWithItself(snake)) {
+			std::cout << "Game over!!" << std::endl;
+			return EXIT_SUCCESS;
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MILLISECONDS));
