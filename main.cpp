@@ -40,16 +40,24 @@ void ChangeOrientation(Orientation& orientation, const sf::Event& event) {
 	switch (event.key.code)
 	{
 	case sf::Keyboard::Up:
-		orientation = Orientation::UP;
+		if (orientation != Orientation::DOWN) {
+			orientation = Orientation::UP;
+		}
 		break;
 	case sf::Keyboard::Down:
-		orientation = Orientation::DOWN;
+		if (orientation != Orientation::UP) {
+			orientation = Orientation::DOWN;
+		}
 		break;
 	case sf::Keyboard::Left:
-		orientation = Orientation::LEFT;
+		if (orientation != Orientation::RIGHT) {
+			orientation = Orientation::LEFT;
+		}
 		break;
 	case sf::Keyboard::Right:
-		orientation = Orientation::RIGHT;
+		if (orientation != Orientation::LEFT) {
+			orientation = Orientation::RIGHT;
+		}
 		break;
 	}
 }
