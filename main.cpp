@@ -8,7 +8,7 @@
 #include <random>
 #include <vector>
 
-static const float MOVE_BY = 10.0f;
+static const float SPEED = 10.0f;
 static const int SLEEP_MILLISECONDS = 50;
 static const int SLEEP_MOVE_MILISECONDS = 20;
 static const int DEFAULT_WIDTH = 600;
@@ -19,16 +19,16 @@ void MoveSnakeByOrientation(Snake& snake, const Orientation& orientation) {
 
 	switch (orientation) {
 	case Orientation::UP:
-		snake.m_Parts[0].m_Rect.move(0, -MOVE_BY);
+		snake.m_Parts[0].m_Rect.move(0, -SPEED);
 		break;
 	case Orientation::DOWN:
-		snake.m_Parts[0].m_Rect.move(0, MOVE_BY);
+		snake.m_Parts[0].m_Rect.move(0, SPEED);
 		break;
 	case Orientation::LEFT:
-		snake.m_Parts[0].m_Rect.move(-MOVE_BY, 0);
+		snake.m_Parts[0].m_Rect.move(-SPEED, 0);
 		break;
 	case Orientation::RIGHT:
-		snake.m_Parts[0].m_Rect.move(MOVE_BY, 0);
+		snake.m_Parts[0].m_Rect.move(SPEED, 0);
 		break;
 	}
 
@@ -81,10 +81,10 @@ bool SnakeCollidedWithItself(const Snake& snake) {
 bool SnakeIsOutOfBounds(const SnakePart& snake_head) {
 	sf::Vector2f snake_head_pos = snake_head.m_Rect.getPosition();
 
-	return snake_head_pos.x + MOVE_BY < 0 ||
-		   snake_head_pos.y + MOVE_BY < 0 ||
-		   snake_head_pos.x + MOVE_BY >= DEFAULT_WIDTH ||
-		   snake_head_pos.y + MOVE_BY >= DEFAULT_HEIGHT;
+	return snake_head_pos.x < 0 ||
+		   snake_head_pos.y < 0 ||
+		   snake_head_pos.x >= DEFAULT_WIDTH ||
+		   snake_head_pos.y >= DEFAULT_HEIGHT;
 }
 
 void MoveApple(sf::CircleShape& apple) {
