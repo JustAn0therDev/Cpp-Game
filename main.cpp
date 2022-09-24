@@ -64,7 +64,6 @@ void ChangeOrientation(Orientation& orientation, const sf::Event& event) {
 	}
 }
 
-// TODO: make my own collision detection.
 bool Collided(const sf::Shape& objA, const sf::Shape& objB) {
 	return objA.getGlobalBounds().intersects(objB.getGlobalBounds());
 }
@@ -81,7 +80,12 @@ bool SnakeCollidedWithItself(const Snake& snake) {
 
 bool SnakeIsOutOfBounds(const SnakePart& snake_head) {
 	sf::Vector2f snake_head_pos = snake_head.m_Rect.getPosition();
-	return snake_head_pos.x < 0 || snake_head_pos.y < 0 || snake_head_pos.x == DEFAULT_WIDTH || snake_head_pos.y == DEFAULT_HEIGHT;
+	sf::FloatRect global_bounds = snake_head.m_Rect.getGlobalBounds();
+
+	return (snake_head_pos.x + (global_bounds.width / 2)) < 0 ||
+		   (snake_head_pos.y + (global_bounds.height / 2)) < 0 ||
+		   (snake_head_pos.x + (global_bounds.width / 2)) >= DEFAULT_WIDTH || 
+		   (snake_head_pos.y + (global_bounds.height / 2)) >= DEFAULT_HEIGHT;
 }
 
 void MoveApple(sf::CircleShape& apple) {
