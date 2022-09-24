@@ -89,12 +89,12 @@ void MoveApple(sf::CircleShape& apple) {
 	std::mt19937 rng(dev());
 	std::uniform_int_distribution<std::mt19937::result_type> distWidth(10, DEFAULT_WIDTH - 10);
 
-	int x = ceil(distWidth(rng) / 10) * 10;
+	float x = static_cast<float>(ceil(distWidth(rng) / 10) * 10);
 
 	std::mt19937 rng2(dev());
 	std::uniform_int_distribution<std::mt19937::result_type> distHeight(10, DEFAULT_HEIGHT - 10);
 
-	int y = ceil(distHeight(rng2) / 10) * 10;
+	float y = static_cast<float>(ceil(distHeight(rng2) / 10) * 10);
 
 	apple.setPosition(x, y);
 }
