@@ -31,7 +31,8 @@ void MoveSnakeByOrientation(Snake& snake, const Orientation& orientation) {
 	}
 
 	for (int i = 1; i < snake.m_Parts.size(); i++) {
-		snake.m_Parts[i].m_Rect.move(snake.m_Parts[i - 1].m_LastPosition);
+		snake.m_Parts[i].m_LastPosition = snake.m_Parts[i].m_Rect.getPosition();
+		snake.m_Parts[i].m_Rect.setPosition(snake.m_Parts[i - 1].m_LastPosition);
 	}
 }
 
@@ -60,6 +61,8 @@ bool Collided(const sf::RectangleShape& objA, const sf::CircleShape& objB) {
 }
 
 void MoveApple(sf::CircleShape& apple) {
+	// TODO: ROUND THESE VALUES SO THAT THE RECTANGLE CAN MOVE TO THE EXACT SAME POSITION
+	// AS THE APPLE.
 	//std::random_device dev;
 	//std::mt19937 rng(dev());
 	//std::uniform_int_distribution<std::mt19937::result_type> distWidth(10, 1270);
@@ -88,20 +91,23 @@ void AddPartToSnake(std::vector<SnakePart>& parts, const Orientation& orientatio
 
 	const sf::Vector2f size = last_part.getSize();
 
-	switch (orientation) {
-	case Orientation::UP:
-		new_snake_part.setPosition(pos.x, pos.y - size.x);
-		break;
-	case Orientation::DOWN:
-		new_snake_part.setPosition(pos.x, pos.y + size.x);
-		break;
-	case Orientation::LEFT:
-		new_snake_part.setPosition(pos.x - size.x, pos.y);
-		break;
-	case Orientation::RIGHT:
-		new_snake_part.setPosition(pos.x + size.x, pos.y);
-		break;
-	}
+	//switch (orientation) {
+	//case Orientation::UP:
+	//	new_snake_part.setPosition(pos.x, pos.y - size.x);
+	//	break;
+	//case Orientation::DOWN:
+	//	new_snake_part.setPosition(pos.x, pos.y + size.x);
+	//	break;
+	//case Orientation::LEFT:
+	//	new_snake_part.setPosition(pos.x - size.x, pos.y);
+	//	break;
+	//case Orientation::RIGHT:
+	//	new_snake_part.setPosition(pos.x + size.x, pos.y);
+	//	break;
+	//}
+
+	// @Testing
+	new_snake_part.setPosition(pos);
 
 	parts.push_back(SnakePart(new_snake_part));
 }
@@ -138,10 +144,11 @@ int main() {
 
 		MoveSnakeByOrientation(snake, orientation);
 
-		/* TODO: debug later
-		std::cout << "Snake's head position: " << snake.m_Parts[0].m_Rect.getPosition().x << " " << snake.m_Parts[0].m_Rect.getPosition().y << std::endl;
-		std::cout << "Apple's position: " << apple.getPosition().x << " " << apple.getPosition().y << std::endl;
-		*/
+		if (snake.m_Parts.size() > 1) {
+			std::cout << "Snake's part position: " << snake.m_Parts[1].m_Rect.getPosition().x << " " << snake.m_Parts[1].m_Rect.getPosition().y << std::endl;
+		}
+		
+		// std::cout << "Apple's position: " << apple.getPosition().x << " " << apple.getPosition().y << std::endl;
 
 		if (Collided(snake.m_Parts[0].m_Rect, apple)) {
 			std::cout << "Collision detected!" << std::endl;
