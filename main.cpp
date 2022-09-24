@@ -80,12 +80,11 @@ bool SnakeCollidedWithItself(const Snake& snake) {
 
 bool SnakeIsOutOfBounds(const SnakePart& snake_head) {
 	sf::Vector2f snake_head_pos = snake_head.m_Rect.getPosition();
-	sf::FloatRect global_bounds = snake_head.m_Rect.getGlobalBounds();
 
-	return (snake_head_pos.x + (global_bounds.width / 2)) < 0 ||
-		   (snake_head_pos.y + (global_bounds.height / 2)) < 0 ||
-		   (snake_head_pos.x + (global_bounds.width / 2)) >= DEFAULT_WIDTH || 
-		   (snake_head_pos.y + (global_bounds.height / 2)) >= DEFAULT_HEIGHT;
+	return snake_head_pos.x + MOVE_BY < 0 ||
+		   snake_head_pos.y + MOVE_BY < 0 ||
+		   snake_head_pos.x + MOVE_BY >= DEFAULT_WIDTH ||
+		   snake_head_pos.y + MOVE_BY >= DEFAULT_HEIGHT;
 }
 
 void MoveApple(sf::CircleShape& apple) {
