@@ -11,6 +11,8 @@
 static const float MOVE_BY = 10.0f;
 static const int SLEEP_MILLISECONDS = 50;
 static const int SLEEP_MOVE_MILISECONDS = 20;
+static const int DEFAULT_WIDTH = 600;
+static const int DEFAULT_HEIGHT = 400;
 
 void MoveSnakeByOrientation(Snake& snake, const Orientation& orientation) {
 	snake.m_Parts[0].m_LastPosition = snake.m_Parts[0].m_Rect.getPosition();
@@ -77,15 +79,20 @@ bool SnakeCollidedWithItself(const Snake& snake) {
 	return false;
 }
 
+bool SnakeIsOutOfBounds(const SnakePart& snake_head) {
+	sf::Vector2f snake_head_pos = snake_head.m_Rect.getPosition();
+	return snake_head_pos.x < 0 || snake_head_pos.y < 0 || snake_head_pos.x == DEFAULT_WIDTH || snake_head_pos.y == DEFAULT_HEIGHT;
+}
+
 void MoveApple(sf::CircleShape& apple) {
 	std::random_device dev;
 	std::mt19937 rng(dev());
-	std::uniform_int_distribution<std::mt19937::result_type> distWidth(10, 700);
+	std::uniform_int_distribution<std::mt19937::result_type> distWidth(10, DEFAULT_WIDTH - 10);
 
 	int x = ceil(distWidth(rng) / 10) * 10;
 
 	std::mt19937 rng2(dev());
-	std::uniform_int_distribution<std::mt19937::result_type> distHeight(10, 500);
+	std::uniform_int_distribution<std::mt19937::result_type> distHeight(10, DEFAULT_HEIGHT - 10);
 
 	int y = ceil(distHeight(rng2) / 10) * 10;
 
@@ -122,7 +129,7 @@ void AddPartToSnake(std::vector<SnakePart>& parts, const Orientation& orientatio
 }
 
 int main() {
-	sf::RenderWindow window(sf::VideoMode(1280, 720), "Snek Gaem!!1");
+	sf::RenderWindow window(sf::VideoMode(DEFAULT_WIDTH, DEFAULT_HEIGHT), "Snek Gaem!!1");
 	sf::RectangleShape first_part(sf::Vector2f(25.0f, 25.0f));
 
 	first_part.setFillColor(sf::Color::Green);
@@ -140,7 +147,6 @@ int main() {
 	while (window.isOpen())
 	{
 		sf::Event event;
-		sf::Vector2f offset(0.0f, 0.0f);
 
 		while (window.pollEvent(event))
 		{
@@ -157,8 +163,7 @@ int main() {
 			MoveApple(apple);
 			AddPartToSnake(snake.m_Parts, orientation);
 		}
-		else if (SnakeCollidedWithItself(snake)) {
-			std::cout << "Game over!!" << std::endl;
+		else if (SnakeCollidedWithItself(snake) || SnakeIsOutOfBounds(snake.m_Parts[0])) {
 			return EXIT_SUCCESS;
 		}
 
