@@ -54,10 +54,9 @@ void ChangeOrientation(Orientation& orientation, const sf::Event& event) {
 	}
 }
 
-// TODO: make this better by getting the offset from the rectangle size, so that the player gets the apple
-// by touching it (basically a bit faster version of this "collision detection"
+// TODO: make my own collision detection.
 bool Collided(const sf::RectangleShape& objA, const sf::CircleShape& objB) {
-	return objA.getPosition() == objB.getPosition();
+	return objA.getGlobalBounds().intersects(objB.getGlobalBounds());
 }
 
 void MoveApple(sf::CircleShape& apple) {
@@ -65,14 +64,12 @@ void MoveApple(sf::CircleShape& apple) {
 	std::mt19937 rng(dev());
 	std::uniform_int_distribution<std::mt19937::result_type> distWidth(10, 700);
 
-	int x = ceil(distWidth(rng)/10) * 10;
+	int x = ceil(distWidth(rng) / 10) * 10;
 
 	std::mt19937 rng2(dev());
 	std::uniform_int_distribution<std::mt19937::result_type> distHeight(10, 500);
 
 	int y = ceil(distHeight(rng2) / 10) * 10;
-
-	std::cout << "Apple's new position is: " << x << " " << y << std::endl;
 
 	apple.setPosition(x, y);
 }
@@ -137,10 +134,6 @@ int main() {
 		}
 
 		MoveSnakeByOrientation(snake, orientation);
-
-		std::cout << "Snake's head position: " << snake.m_Parts[0].m_Rect.getPosition().x << " " << snake.m_Parts[0].m_Rect.getPosition().y << std::endl;
-		
-		// std::cout << "Apple's position: " << apple.getPosition().x << " " << apple.getPosition().y << std::endl;
 
 		if (Collided(snake.m_Parts[0].m_Rect, apple)) {
 			std::cout << "Collision detected!" << std::endl;
