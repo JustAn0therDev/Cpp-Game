@@ -104,26 +104,9 @@ void AddPartToSnake(std::vector<SnakePart>& parts, const Orientation& orientatio
 
 	new_snake_part.setFillColor(sf::Color::Green);
 
-	const sf::RectangleShape& last_part = parts[parts.size() - 1].m_Rect;
+	const SnakePart& last_part = parts[parts.size() - 1];
 
-	const sf::Vector2f pos = last_part.getPosition();
-
-	const sf::Vector2f size = last_part.getSize();
-
-	switch (orientation) {
-	case Orientation::UP:
-		new_snake_part.setPosition(pos.x, pos.y - size.x);
-		break;
-	case Orientation::DOWN:
-		new_snake_part.setPosition(pos.x, pos.y + size.x);
-		break;
-	case Orientation::LEFT:
-		new_snake_part.setPosition(pos.x - size.x, pos.y);
-		break;
-	case Orientation::RIGHT:
-		new_snake_part.setPosition(pos.x + size.x, pos.y);
-		break;
-	}
+	new_snake_part.setPosition(last_part.m_LastPosition);
 
 	parts.push_back(SnakePart(new_snake_part));
 }
