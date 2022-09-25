@@ -130,10 +130,35 @@ int main() {
 	apple.setFillColor(sf::Color::Red);
 	apple.move(20.0f, 20.0f);
 
+	sf::Font font;
+
+	if (!font.loadFromFile("PressStart2P-Regular.ttf")) {
+		std::cout << "Could not open font file." << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	sf::Text text;
+
+	text.setFont(font);
+
+	text.setFillColor(sf::Color::White);
+
+	text.setCharacterSize(24);
+
+	text.setString("game over");
+
+	const float text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - text.getGlobalBounds().width) / 2;
+
+	const float text_y_pos = (static_cast<float>(DEFAULT_HEIGHT) - text.getGlobalBounds().height) / 2;
+
+	text.setPosition(text_x_pos, text_y_pos);
+
+	sf::Event event;
+
+	bool game_over = false;
+
 	while (window.isOpen())
 	{
-		sf::Event event;
-
 		while (window.pollEvent(event))
 		{
 			ChangeOrientation(orientation, event);
@@ -150,7 +175,7 @@ int main() {
 			AddPartToSnake(snake.m_Parts, orientation);
 		}
 		else if (SnakeCollidedWithItself(snake) || SnakeIsOutOfBounds(snake.m_Parts[0])) {
-			return EXIT_SUCCESS;
+			game_over = true;
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MILLISECONDS));
@@ -162,7 +187,20 @@ int main() {
 		}
 
 		window.draw(apple);
+	
+		if (game_over) {
+			window.draw(text);
+			window.display();
+			break;
+		}
+		
 		window.display();
+	}
+
+	while (window.waitEvent(event)) {
+		if (event.key.code == sf::Keyboard::Enter || event.type == sf::Event::Closed) {
+			break;
+		}
 	}
 
 	return EXIT_SUCCESS;
