@@ -139,23 +139,25 @@ int main() {
 
 	sf::Text text;
 
+	sf::Color restart_text_color = sf::Color::White;
+
 	text.setFont(font);
 
 	text.setFillColor(sf::Color::White);
 
 	text.setCharacterSize(24);
 
-	text.setString("game over");
+	text.setString("restarting");
 
-	const float text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - text.getGlobalBounds().width) / 2;
+	const float restart_text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - text.getGlobalBounds().width) / 2;
 
-	const float text_y_pos = (static_cast<float>(DEFAULT_HEIGHT) - text.getGlobalBounds().height) / 2;
+	const float restart_text_y_pos = (static_cast<float>(DEFAULT_HEIGHT) - text.getGlobalBounds().height) / 2;
 
-	text.setPosition(text_x_pos, text_y_pos);
+	text.setPosition(restart_text_x_pos, restart_text_y_pos);
 
 	sf::Event event;
 
-	bool game_over = false;
+	bool game_over = false, called_fade = false;
 
 	while (window.isOpen())
 	{
@@ -168,14 +170,17 @@ int main() {
 			}
 		}
 
-		MoveSnakeByOrientation(snake, orientation);
+		if (!game_over) {
+			MoveSnakeByOrientation(snake, orientation);
 
-		if (Collided(snake.m_Parts[0].m_Rect, apple)) {
-			MoveApple(apple);
-			AddPartToSnake(snake.m_Parts, orientation);
-		}
-		else if (SnakeCollidedWithItself(snake) || SnakeIsOutOfBounds(snake.m_Parts[0])) {
-			game_over = true;
+			if (Collided(snake.m_Parts[0].m_Rect, apple)) {
+				MoveApple(apple);
+				AddPartToSnake(snake.m_Parts, orientation);
+			}
+			else if (SnakeCollidedWithItself(snake) || SnakeIsOutOfBounds(snake.m_Parts[0])) {
+				called_fade = true;
+				game_over = true;
+			}
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MILLISECONDS));
@@ -189,11 +194,14 @@ int main() {
 		window.draw(apple);
 	
 		if (game_over) {
+			if (restart_text_color.a > 0) {
+				restart_text_color.a -= 5;
+				text.setFillColor(restart_text_color);
+			}
+
 			window.draw(text);
-			window.display();
-			break;
 		}
-		
+
 		window.display();
 	}
 
