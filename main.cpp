@@ -13,6 +13,9 @@ static const int SLEEP_MILLISECONDS = 50;
 static const int SLEEP_MOVE_MILISECONDS = 20;
 static const int DEFAULT_WIDTH = 600;
 static const int DEFAULT_HEIGHT = 400;
+static const sf::Color DEFAULT_TRANSPARENT_WHITE_COLOR = sf::Color(255, 255, 255, 0);
+
+static bool is_running_fade_animation = false;
 
 void MoveSnakeByOrientation(Snake& snake, const Orientation& orientation) {
 	snake.m_Parts[0].m_LastPosition = snake.m_Parts[0].m_Rect.getPosition();
@@ -114,21 +117,40 @@ void AddPartToSnake(std::vector<SnakePart>& parts, const Orientation& orientatio
 	parts.push_back(SnakePart(new_snake_part));
 }
 
-int main() {
-	sf::RenderWindow window(sf::VideoMode(DEFAULT_WIDTH, DEFAULT_HEIGHT), "Snek Gaem!!1");
+void FadeColorOut(sf::Text& text) {
+	if (!is_running_fade_animation) {
+		is_running_fade_animation = true;
+
+		sf::Color color = sf::Color::White;
+		while (color.a > 0) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+			color.a -= 1;
+			text.setFillColor(color);
+		}
+
+		is_running_fade_animation = false;
+	}
+}
+
+void InitializeSnake(Snake& snake) {
 	sf::RectangleShape first_part(sf::Vector2f(25.0f, 25.0f));
 
 	first_part.setFillColor(sf::Color::Green);
 
+	snake.m_Parts.push_back(SnakePart(first_part));
+}
+
+int main() {
+	sf::RenderWindow window(sf::VideoMode(DEFAULT_WIDTH, DEFAULT_HEIGHT), "Snek Gaem!!1");
 	Snake snake;
+
+	InitializeSnake(snake);
 
 	Orientation orientation = Orientation::DOWN;
 
-	snake.m_Parts.push_back(SnakePart(first_part));
-
 	sf::CircleShape apple(15.0f);
 	apple.setFillColor(sf::Color::Red);
-	apple.move(20.0f, 20.0f);
+	apple.setPosition(30.0f, 30.0f);
 
 	sf::Font font;
 
@@ -139,11 +161,9 @@ int main() {
 
 	sf::Text text;
 
-	sf::Color restart_text_color = sf::Color::White;
-
 	text.setFont(font);
 
-	text.setFillColor(sf::Color::White);
+	text.setFillColor(DEFAULT_TRANSPARENT_WHITE_COLOR);
 
 	text.setCharacterSize(24);
 
@@ -157,8 +177,6 @@ int main() {
 
 	sf::Event event;
 
-	bool game_over = false, called_fade = false;
-
 	while (window.isOpen())
 	{
 		while (window.pollEvent(event))
@@ -170,17 +188,20 @@ int main() {
 			}
 		}
 
-		if (!game_over) {
-			MoveSnakeByOrientation(snake, orientation);
+		MoveSnakeByOrientation(snake, orientation);
 
-			if (Collided(snake.m_Parts[0].m_Rect, apple)) {
-				MoveApple(apple);
-				AddPartToSnake(snake.m_Parts, orientation);
-			}
-			else if (SnakeCollidedWithItself(snake) || SnakeIsOutOfBounds(snake.m_Parts[0])) {
-				called_fade = true;
-				game_over = true;
-			}
+		if (Collided(snake.m_Parts[0].m_Rect, apple)) {
+			MoveApple(apple);
+			AddPartToSnake(snake.m_Parts, orientation);
+		}
+		else if (SnakeCollidedWithItself(snake) || SnakeIsOutOfBounds(snake.m_Parts[0])) {
+			std::thread thread(FadeColorOut, std::ref(text));
+			thread.detach();
+			
+			snake.~Snake();
+			snake = Snake();
+			InitializeSnake(snake);
+			apple.setPosition(30.0f, 30.0f);
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MILLISECONDS));
@@ -192,16 +213,7 @@ int main() {
 		}
 
 		window.draw(apple);
-	
-		if (game_over) {
-			if (restart_text_color.a > 0) {
-				restart_text_color.a -= 5;
-				text.setFillColor(restart_text_color);
-			}
-
-			window.draw(text);
-		}
-
+		window.draw(text);
 		window.display();
 	}
 
