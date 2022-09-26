@@ -1,6 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include "Orientation.hpp"
+#include "Direction.hpp"
 #include "SnakePart.hpp"
 #include "Snake.hpp"
 #include <chrono>
@@ -18,53 +18,53 @@ static const sf::Vector2f DEFAULT_APPLE_SPAWN_POSITION = sf::Vector2f(30.0f, 30.
 static const float APPLE_RADIUS = 15.0f;
 static const int APPLE_DIAMETER = static_cast<int>(APPLE_RADIUS * 1.5f);
 
-static bool is_running_fade_animation = false;
+static bool g_is_running_fade_animation = false;
 
-void MoveSnakeByOrientation(Snake& snake, const Orientation& orientation) {
-	snake.m_Parts[0].m_LastPosition = snake.m_Parts[0].m_Rect.getPosition();
+void MoveSnakeByDirection(Snake& snake, const Direction& direction) {
+	snake.m_parts[0].m_lastPosition = snake.m_parts[0].m_rect.getPosition();
 
-	switch (orientation) {
-	case Orientation::UP:
-		snake.m_Parts[0].m_Rect.move(0, -SPEED);
+	switch (direction) {
+	case Direction::Up:
+		snake.m_parts[0].m_rect.move(0, -SPEED);
 		break;
-	case Orientation::DOWN:
-		snake.m_Parts[0].m_Rect.move(0, SPEED);
+	case Direction::Down:
+		snake.m_parts[0].m_rect.move(0, SPEED);
 		break;
-	case Orientation::LEFT:
-		snake.m_Parts[0].m_Rect.move(-SPEED, 0);
+	case Direction::Left:
+		snake.m_parts[0].m_rect.move(-SPEED, 0);
 		break;
-	case Orientation::RIGHT:
-		snake.m_Parts[0].m_Rect.move(SPEED, 0);
+	case Direction::Right:
+		snake.m_parts[0].m_rect.move(SPEED, 0);
 		break;
 	}
 
-	for (int i = 1; i < snake.m_Parts.size(); i++) {
-		snake.m_Parts[i].m_LastPosition = snake.m_Parts[i].m_Rect.getPosition();
-		snake.m_Parts[i].m_Rect.setPosition(snake.m_Parts[i - 1].m_LastPosition);
+	for (int i = 1; i < snake.m_parts.size(); i++) {
+		snake.m_parts[i].m_lastPosition = snake.m_parts[i].m_rect.getPosition();
+		snake.m_parts[i].m_rect.setPosition(snake.m_parts[i - 1].m_lastPosition);
 	}
 }
 
-void ChangeOrientation(Orientation& orientation, const sf::Event& event) {
+void ChangeDirection(Direction& direction, const sf::Event& event) {
 	switch (event.key.code)
 	{
 	case sf::Keyboard::Up:
-		if (orientation != Orientation::DOWN) {
-			orientation = Orientation::UP;
+		if (direction != Direction::Down) {
+			direction = Direction::Up;
 		}
 		break;
 	case sf::Keyboard::Down:
-		if (orientation != Orientation::UP) {
-			orientation = Orientation::DOWN;
+		if (direction != Direction::Up) {
+			direction = Direction::Down;
 		}
 		break;
 	case sf::Keyboard::Left:
-		if (orientation != Orientation::RIGHT) {
-			orientation = Orientation::LEFT;
+		if (direction != Direction::Right) {
+			direction = Direction::Left;
 		}
 		break;
 	case sf::Keyboard::Right:
-		if (orientation != Orientation::LEFT) {
-			orientation = Orientation::RIGHT;
+		if (direction != Direction::Left) {
+			direction = Direction::Right;
 		}
 		break;
 	}
@@ -75,8 +75,8 @@ bool Collided(const sf::Shape& objA, const sf::Shape& objB) {
 }
 
 bool SnakeCollidedWithItself(const Snake& snake) {
-	for (int i = 1; i < snake.m_Parts.size(); i++) {
-		if (snake.m_Parts[i].m_Rect.getPosition() == snake.m_Parts[0].m_Rect.getPosition()) {
+	for (int i = 1; i < snake.m_parts.size(); i++) {
+		if (snake.m_parts[i].m_rect.getPosition() == snake.m_parts[0].m_rect.getPosition()) {
 			return true;
 		}
 	}
@@ -85,7 +85,7 @@ bool SnakeCollidedWithItself(const Snake& snake) {
 }
 
 bool SnakeIsOutOfBounds(const SnakePart& snake_head) {
-	sf::Vector2f snake_head_pos = snake_head.m_Rect.getPosition();
+	sf::Vector2f snake_head_pos = snake_head.m_rect.getPosition();
 
 	return snake_head_pos.x < 0 ||
 		   snake_head_pos.y < 0 ||
@@ -108,21 +108,21 @@ void MoveApple(sf::CircleShape& apple) {
 	apple.setPosition(x, y);
 }
 
-void AddPartToSnake(std::vector<SnakePart>& parts, const Orientation& orientation) {
+void AddPartToSnake(std::vector<SnakePart>& parts, const Direction& direction) {
 	sf::RectangleShape new_snake_part(sf::Vector2f(25.0f, 25.0f));
 
 	new_snake_part.setFillColor(sf::Color::Green);
 
 	const SnakePart& last_part = parts[parts.size() - 1];
 
-	new_snake_part.setPosition(last_part.m_LastPosition);
+	new_snake_part.setPosition(last_part.m_lastPosition);
 
 	parts.push_back(SnakePart(new_snake_part));
 }
 
 void FadeOut(sf::Text& text) {
-	if (!is_running_fade_animation) {
-		is_running_fade_animation = true;
+	if (!g_is_running_fade_animation) {
+		g_is_running_fade_animation = true;
 
 		sf::Color color = sf::Color::White;
 		while (color.a > 0) {
@@ -131,7 +131,7 @@ void FadeOut(sf::Text& text) {
 			text.setFillColor(color);
 		}
 
-		is_running_fade_animation = false;
+		g_is_running_fade_animation = false;
 	}
 }
 
@@ -140,10 +140,10 @@ void InitializeSnake(Snake& snake) {
 
 	first_part.setFillColor(sf::Color::Green);
 
-	snake.m_Parts.push_back(SnakePart(first_part));
+	snake.m_parts.push_back(SnakePart(first_part));
 }
 
-void RestartGame(Snake& snake, sf::Shape& apple, Orientation& orientation) {
+void RestartGame(Snake& snake, sf::Shape& apple, Direction& direction) {
 	snake.~Snake();
 	
 	snake = Snake();
@@ -152,7 +152,7 @@ void RestartGame(Snake& snake, sf::Shape& apple, Orientation& orientation) {
 
 	apple.setPosition(DEFAULT_APPLE_SPAWN_POSITION);
 	
-	orientation = Orientation::DOWN;
+	direction = Direction::Down;
 }
 
 int main() {
@@ -161,7 +161,7 @@ int main() {
 
 	InitializeSnake(snake);
 
-	Orientation orientation = Orientation::DOWN;
+	Direction direction = Direction::Down;
 
 	sf::CircleShape apple(APPLE_RADIUS);
 	apple.setFillColor(sf::Color::Red);
@@ -196,31 +196,31 @@ int main() {
 	{
 		while (window.pollEvent(event))
 		{
-			ChangeOrientation(orientation, event);
+			ChangeDirection(direction, event);
 
 			if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Key::Escape) {
 				window.close();
 			}
 		}
 
-		MoveSnakeByOrientation(snake, orientation);
+		MoveSnakeByDirection(snake, direction);
 
-		if (Collided(snake.m_Parts[0].m_Rect, apple)) {
+		if (Collided(snake.m_parts[0].m_rect, apple)) {
 			MoveApple(apple);
-			AddPartToSnake(snake.m_Parts, orientation);
+			AddPartToSnake(snake.m_parts, direction);
 		}
-		else if (SnakeCollidedWithItself(snake) || SnakeIsOutOfBounds(snake.m_Parts[0])) {
+		else if (SnakeCollidedWithItself(snake) || SnakeIsOutOfBounds(snake.m_parts[0])) {
 			std::thread thread(FadeOut, std::ref(text));
 			thread.detach();
-			RestartGame(snake, apple, orientation);
+			RestartGame(snake, apple, direction);
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MILLISECONDS));
 
 		window.clear();
 
-		for (const auto& snake_part : snake.m_Parts) {
-			window.draw(snake_part.m_Rect);
+		for (const auto& snake_part : snake.m_parts) {
+			window.draw(snake_part.m_rect);
 		}
 
 		window.draw(apple);

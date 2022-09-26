@@ -5,10 +5,9 @@
 
 class Snake {
 public:
-	std::vector<SnakePart> m_Parts;
-	sf::Vector2f m_HeadsLastPositionBeforeChangingOrientation;
+	std::vector<SnakePart> m_parts;
 
-	Snake() : m_Parts(std::vector<SnakePart>()), m_HeadsLastPositionBeforeChangingOrientation(sf::Vector2f()) {
+	Snake() : m_parts(std::vector<SnakePart>()) {
 
 	}
 };
