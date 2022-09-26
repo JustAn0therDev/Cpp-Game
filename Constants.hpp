@@ -1,8 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-const float SPEED = 10.0f;
-const int SLEEP_MILLISECONDS = 50;
+const float SPEED = 5.0f;
+const int SLEEP_MILLISECONDS = 16;
 const int SLEEP_MOVE_MILISECONDS = 20;
 const int DEFAULT_WIDTH = 600;
 const int DEFAULT_HEIGHT = 400;
@@ -12,3 +12,4 @@ const float APPLE_RADIUS = 15.0f;
 const int APPLE_DIAMETER = static_cast<int>(APPLE_RADIUS * 1.5f);
 const char RESTART_TEXT[11] = "restarting";
 const int DEFAULT_TEXT_CHAR_SIZE = 24;
+const char FONT_PATH[25] = "PressStart2P-Regular.ttf";

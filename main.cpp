@@ -12,17 +12,28 @@ int main() {
 	sf::RenderWindow window(sf::VideoMode(DEFAULT_WIDTH, DEFAULT_HEIGHT), "Snek Gaem!!1");
 
 	Game game;
-
-	sf::Font font;
-	sf::Text text;
 	sf::Event event;
+	sf::Text text;
+	sf::Font font;
 
-	if (!font.loadFromFile("PressStart2P-Regular.ttf")) {
+	if (!font.loadFromFile(FONT_PATH)) {
 		std::cout << "Could not open font file.\n";
-		return EXIT_FAILURE;
+		exit(1);
 	}
 
-	Ui::InitializeRestartingText(text, font);
+	text.setFont(font);
+
+	text.setFillColor(DEFAULT_TRANSPARENT_WHITE_COLOR);
+
+	text.setCharacterSize(DEFAULT_TEXT_CHAR_SIZE);
+
+	text.setString(RESTART_TEXT);
+
+	const float restart_text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - text.getGlobalBounds().width) / 2;
+
+	const float restart_text_y_pos = (static_cast<float>(DEFAULT_HEIGHT) - text.getGlobalBounds().height) / 2;
+
+	text.setPosition(restart_text_x_pos, restart_text_y_pos);
 
 	while (window.isOpen())
 	{
