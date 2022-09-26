@@ -16,7 +16,7 @@ static const int DEFAULT_HEIGHT = 400;
 static const sf::Color DEFAULT_TRANSPARENT_WHITE_COLOR = sf::Color(255, 255, 255, 0);
 static const sf::Vector2f DEFAULT_APPLE_SPAWN_POSITION = sf::Vector2f(30.0f, 30.0f);
 static const float APPLE_RADIUS = 15.0f;
-static const int APPLE_DIAMETER = (int)APPLE_RADIUS * 1.5f;
+static const int APPLE_DIAMETER = static_cast<int>(APPLE_RADIUS * 1.5f);
 
 static bool is_running_fade_animation = false;
 
