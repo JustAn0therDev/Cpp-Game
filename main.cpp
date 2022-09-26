@@ -14,6 +14,9 @@ static const int SLEEP_MOVE_MILISECONDS = 20;
 static const int DEFAULT_WIDTH = 600;
 static const int DEFAULT_HEIGHT = 400;
 static const sf::Color DEFAULT_TRANSPARENT_WHITE_COLOR = sf::Color(255, 255, 255, 0);
+static const sf::Vector2f DEFAULT_APPLE_SPAWN_POSITION = sf::Vector2f(30.0f, 30.0f);
+static const float APPLE_RADIUS = 15.0f;
+static const float APPLE_DIAMETER = APPLE_RADIUS * 1.5f;
 
 static bool is_running_fade_animation = false;
 
@@ -93,12 +96,12 @@ bool SnakeIsOutOfBounds(const SnakePart& snake_head) {
 void MoveApple(sf::CircleShape& apple) {
 	std::random_device dev;
 	std::mt19937 rng(dev());
-	std::uniform_int_distribution<std::mt19937::result_type> distWidth(10, DEFAULT_WIDTH - 10);
+	std::uniform_int_distribution<std::mt19937::result_type> distWidth(10.0f + APPLE_DIAMETER, DEFAULT_WIDTH - APPLE_DIAMETER);
 
 	float x = static_cast<float>(ceil(distWidth(rng) / 10) * 10);
 
 	std::mt19937 rng2(dev());
-	std::uniform_int_distribution<std::mt19937::result_type> distHeight(10, DEFAULT_HEIGHT - 10);
+	std::uniform_int_distribution<std::mt19937::result_type> distHeight(10.0f + APPLE_DIAMETER, DEFAULT_HEIGHT - APPLE_DIAMETER);
 
 	float y = static_cast<float>(ceil(distHeight(rng2) / 10) * 10);
 
@@ -117,13 +120,13 @@ void AddPartToSnake(std::vector<SnakePart>& parts, const Orientation& orientatio
 	parts.push_back(SnakePart(new_snake_part));
 }
 
-void FadeColorOut(sf::Text& text) {
+void FadeOut(sf::Text& text) {
 	if (!is_running_fade_animation) {
 		is_running_fade_animation = true;
 
 		sf::Color color = sf::Color::White;
 		while (color.a > 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 			color.a -= 1;
 			text.setFillColor(color);
 		}
@@ -140,6 +143,14 @@ void InitializeSnake(Snake& snake) {
 	snake.m_Parts.push_back(SnakePart(first_part));
 }
 
+void RestartGame(Snake& snake, sf::Shape& apple, Orientation& orientation) {
+	InitializeSnake(snake);
+
+	apple.setPosition(DEFAULT_APPLE_SPAWN_POSITION);
+	
+	orientation = Orientation::DOWN;
+}
+
 int main() {
 	sf::RenderWindow window(sf::VideoMode(DEFAULT_WIDTH, DEFAULT_HEIGHT), "Snek Gaem!!1");
 	Snake snake;
@@ -148,14 +159,14 @@ int main() {
 
 	Orientation orientation = Orientation::DOWN;
 
-	sf::CircleShape apple(15.0f);
+	sf::CircleShape apple(APPLE_RADIUS);
 	apple.setFillColor(sf::Color::Red);
-	apple.setPosition(30.0f, 30.0f);
+	apple.setPosition(DEFAULT_APPLE_SPAWN_POSITION);
 
 	sf::Font font;
 
 	if (!font.loadFromFile("PressStart2P-Regular.ttf")) {
-		std::cout << "Could not open font file." << std::endl;
+		std::cout << "Could not open font file.\n";
 		return EXIT_FAILURE;
 	}
 
@@ -183,7 +194,7 @@ int main() {
 		{
 			ChangeOrientation(orientation, event);
 
-			if (event.type == sf::Event::Closed) {
+			if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Key::Escape) {
 				window.close();
 			}
 		}
@@ -195,13 +206,12 @@ int main() {
 			AddPartToSnake(snake.m_Parts, orientation);
 		}
 		else if (SnakeCollidedWithItself(snake) || SnakeIsOutOfBounds(snake.m_Parts[0])) {
-			std::thread thread(FadeColorOut, std::ref(text));
+			std::thread thread(FadeOut, std::ref(text));
 			thread.detach();
 			
 			snake.~Snake();
 			snake = Snake();
-			InitializeSnake(snake);
-			apple.setPosition(30.0f, 30.0f);
+			RestartGame(snake, apple, orientation);
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MILLISECONDS));
