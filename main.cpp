@@ -22,8 +22,10 @@ int main() {
 		exit(1);
 	}
 	
+	sf::Color restart_text_color = DEFAULT_TRANSPARENT_WHITE_COLOR;
+
 	restart_text.setFont(font);
-	restart_text.setFillColor(DEFAULT_TRANSPARENT_WHITE_COLOR);
+	restart_text.setFillColor(restart_text_color);
 	restart_text.setCharacterSize(DEFAULT_TEXT_CHAR_SIZE);
 	restart_text.setString(RESTART_TEXT);
 
@@ -32,8 +34,6 @@ int main() {
 	const float restart_text_y_pos = (static_cast<float>(DEFAULT_HEIGHT) - restart_text.getGlobalBounds().height) / 2;
 
 	restart_text.setPosition(restart_text_x_pos, restart_text_y_pos);
-
-	sf::Color restart_text_color = sf::Color::White;
 
 	apples_eaten_text.setFont(font);
 	apples_eaten_text.setFillColor(sf::Color::White);
