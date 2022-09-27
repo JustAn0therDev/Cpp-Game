@@ -18,7 +18,7 @@ void Ui::TriggerFadeOutAnimation(sf::Text* text) {
 	sf::Color color = sf::Color::White;
 
 	while (color.a > 0) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		std::this_thread::sleep_for(std::chrono::milliseconds(2));
 		color.a -= 1;
 		text->setFillColor(color);
 	}
