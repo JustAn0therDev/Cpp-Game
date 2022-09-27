@@ -4,7 +4,7 @@
 #include <chrono>
 #include <random>
 
-Game::Game() : m_snake(Snake()), m_apple(sf::CircleShape(APPLE_RADIUS)) {
+Game::Game() : m_snake(Snake()), m_apple(sf::CircleShape(APPLE_RADIUS)), m_apples_eaten(0) {
 	m_apple.setFillColor(sf::Color::Red);
 	m_apple.setPosition(DEFAULT_APPLE_SPAWN_POSITION);
 }

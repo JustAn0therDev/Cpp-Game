@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 
 const float SPEED = 5.0f;
-const int SLEEP_MILLISECONDS = 16;
+const int SLEEP_MILLISECONDS = 8;
 const int SLEEP_MOVE_MILISECONDS = 20;
 const int DEFAULT_WIDTH = 600;
 const int DEFAULT_HEIGHT = 400;

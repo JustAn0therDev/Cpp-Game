@@ -14,6 +14,7 @@ int main() {
 	Game game;
 	sf::Event event;
 	sf::Text text;
+	sf::Text apples_eaten_text;
 	sf::Font font;
 
 	if (!font.loadFromFile(FONT_PATH)) {
@@ -22,12 +23,14 @@ int main() {
 	}
 
 	text.setFont(font);
-
 	text.setFillColor(DEFAULT_TRANSPARENT_WHITE_COLOR);
-
 	text.setCharacterSize(DEFAULT_TEXT_CHAR_SIZE);
-
 	text.setString(RESTART_TEXT);
+
+	apples_eaten_text.setFont(font);
+	apples_eaten_text.setFillColor(sf::Color::White);
+	apples_eaten_text.setCharacterSize(DEFAULT_TEXT_CHAR_SIZE);
+	apples_eaten_text.setString(std::to_string(game.m_apples_eaten));
 
 	const float restart_text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - text.getGlobalBounds().width) / 2;
 
@@ -51,6 +54,7 @@ int main() {
 		if (Game::Collided(game.m_snake.m_parts[0].m_rect, game.m_apple)) {
 			game.MoveApple();
 			game.m_snake.AddPart();
+			game.m_apples_eaten++;
 		}
 		else if (game.SnakeCollidedWithItself() || game.SnakeIsOutOfBounds()) {
 			std::thread thread(Ui::FadeOut, std::ref(text));
@@ -71,6 +75,9 @@ int main() {
 		if (text.getFillColor().a > 0) {
 			window.draw(text);
 		}
+
+		apples_eaten_text.setString(std::to_string(game.m_apples_eaten));
+		window.draw(apples_eaten_text);
 
 		window.display();
 	}

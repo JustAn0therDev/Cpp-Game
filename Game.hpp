@@ -7,6 +7,7 @@ class Game {
 public:
 	Snake m_snake;
 	sf::CircleShape m_apple;
+	int m_apples_eaten;
 
 	Game();
 
