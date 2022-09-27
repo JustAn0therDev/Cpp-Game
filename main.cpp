@@ -8,35 +8,30 @@
 #include "Constants.hpp"
 #include "Ui.hpp"
 
+
+
 int main() {
 	sf::RenderWindow window(sf::VideoMode(DEFAULT_WIDTH, DEFAULT_HEIGHT), "Snek Gaem!!1");
 
 	Game game;
 	sf::Event event;
-	sf::Text text;
+	
 	sf::Text apples_eaten_text;
-	sf::Font font;
 
-	if (!font.loadFromFile(FONT_PATH)) {
-		std::cout << "Could not open font file.\n";
-		exit(1);
-	}
+	Ui ui;
 
-	text.setFont(font);
-	text.setFillColor(DEFAULT_TRANSPARENT_WHITE_COLOR);
-	text.setCharacterSize(DEFAULT_TEXT_CHAR_SIZE);
-	text.setString(RESTART_TEXT);
+	sf::Text* text = ui.CreateText();
 
-	apples_eaten_text.setFont(font);
+	apples_eaten_text.setFont(ui.m_font);
 	apples_eaten_text.setFillColor(sf::Color::White);
 	apples_eaten_text.setCharacterSize(DEFAULT_TEXT_CHAR_SIZE);
 	apples_eaten_text.setString(std::to_string(game.m_apples_eaten));
 
-	const float restart_text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - text.getGlobalBounds().width) / 2;
+	const float restart_text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - text->getGlobalBounds().width) / 2;
 
-	const float restart_text_y_pos = (static_cast<float>(DEFAULT_HEIGHT) - text.getGlobalBounds().height) / 2;
+	const float restart_text_y_pos = (static_cast<float>(DEFAULT_HEIGHT) - text->getGlobalBounds().height) / 2;
 
-	text.setPosition(restart_text_x_pos, restart_text_y_pos);
+	text->setPosition(restart_text_x_pos, restart_text_y_pos);
 
 	while (window.isOpen())
 	{
@@ -57,7 +52,7 @@ int main() {
 			game.m_apples_eaten++;
 		}
 		else if (game.SnakeCollidedWithItself() || game.SnakeIsOutOfBounds()) {
-			std::thread thread(Ui::FadeOut, std::ref(text));
+			std::thread thread(ui.FadeOut, text);
 			thread.detach();
 			game = Game();
 		}
@@ -72,8 +67,8 @@ int main() {
 
 		window.draw(game.m_apple);
 
-		if (text.getFillColor().a > 0) {
-			window.draw(text);
+		if (text->getFillColor().a > 0) {
+			window.draw(*text);
 		}
 
 		apples_eaten_text.setString(std::to_string(game.m_apples_eaten));

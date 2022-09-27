@@ -3,5 +3,10 @@
 
 class Ui {
 public:
-	static void FadeOut(sf::Text& text);
+	sf::Font m_font;
+
+	Ui();
+
+	static void FadeOut(sf::Text *text);
+	sf::Text* CreateText();
 };
