@@ -6,7 +6,25 @@
 #include <memory>
 #include <iostream>
 
-bool Ui::m_is_running_fade_animation;
+bool Ui::m_fade_animation_lock;
+
+void Ui::TriggerFadeOutAnimation(sf::Text* text) {
+	if (m_fade_animation_lock) {
+		return;
+	}
+
+	m_fade_animation_lock = true;
+
+	sf::Color color = sf::Color::White;
+
+	while (color.a > 0) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		color.a -= 1;
+		text->setFillColor(color);
+	}
+
+	m_fade_animation_lock = false;
+}
 
 Ui::Ui() : m_font(sf::Font()) {
 	if (!m_font.loadFromFile(FONT_PATH)) {
@@ -15,20 +33,9 @@ Ui::Ui() : m_font(sf::Font()) {
 	}
 }
 
-void Ui::FadeOut(sf::Text* text) {
-	if (!m_is_running_fade_animation) {
-		m_is_running_fade_animation = true;
-
-		sf::Color color = sf::Color::White;
-
-		while (color.a > 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-			color.a -= 1;
-			text->setFillColor(color);
-		}
-
-		m_is_running_fade_animation = false;
-	}
+void Ui::FadeOut(sf::Text *text) {
+	std::thread thread(TriggerFadeOutAnimation, text);
+	thread.detach();
 }
 
 sf::Text* Ui::MakeText(const sf::Color& text_color, unsigned int char_size, const std::string& string) {

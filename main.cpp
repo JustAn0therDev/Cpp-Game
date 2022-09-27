@@ -12,6 +12,7 @@
 
 int main() {
 	sf::RenderWindow window(sf::VideoMode(DEFAULT_WIDTH, DEFAULT_HEIGHT), "Snek Gaem!!1");
+	window.setFramerateLimit(60);
 
 	Game game;
 	sf::Event event;
@@ -20,13 +21,13 @@ int main() {
 
 	sf::Text* text = ui.MakeText(DEFAULT_TRANSPARENT_WHITE_COLOR, DEFAULT_TEXT_CHAR_SIZE, RESTART_TEXT);
 
-	sf::Text* apples_eaten_text = ui.MakeText(sf::Color::White, DEFAULT_TEXT_CHAR_SIZE, std::to_string(game.m_apples_eaten));
-
 	const float restart_text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - text->getGlobalBounds().width) / 2;
 
 	const float restart_text_y_pos = (static_cast<float>(DEFAULT_HEIGHT) - text->getGlobalBounds().height) / 2;
 
 	text->setPosition(restart_text_x_pos, restart_text_y_pos);
+
+	sf::Text* apples_eaten_text = ui.MakeText(sf::Color::White, DEFAULT_TEXT_CHAR_SIZE, std::to_string(game.m_apples_eaten));
 
 	while (window.isOpen())
 	{
@@ -47,12 +48,9 @@ int main() {
 			game.m_apples_eaten++;
 		}
 		else if (game.SnakeCollidedWithItself() || game.SnakeIsOutOfBounds()) {
-			std::thread thread(ui.FadeOut, text);
-			thread.detach();
+			ui.FadeOut(text);
 			game = Game();
 		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_MILLISECONDS));
 
 		window.clear();
 
