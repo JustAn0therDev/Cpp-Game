@@ -6,9 +6,6 @@
 #include "SnakePart.hpp"
 #include <thread>
 #include "Constants.hpp"
-#include "Ui.hpp"
-
-
 
 int main() {
 	sf::RenderWindow window(sf::VideoMode(DEFAULT_WIDTH, DEFAULT_HEIGHT), "Snek Gaem!!1");
@@ -16,18 +13,32 @@ int main() {
 
 	Game game;
 	sf::Event event;
+	sf::Font font;
+	sf::Text restart_text;
+	sf::Text apples_eaten_text;
+
+	if (!font.loadFromFile(FONT_PATH)) {
+		std::cout << "Could not open font file.\n";
+		exit(1);
+	}
 	
-	Ui ui;
+	restart_text.setFont(font);
+	restart_text.setFillColor(DEFAULT_TRANSPARENT_WHITE_COLOR);
+	restart_text.setCharacterSize(DEFAULT_TEXT_CHAR_SIZE);
+	restart_text.setString(RESTART_TEXT);
 
-	sf::Text* text = ui.MakeText(DEFAULT_TRANSPARENT_WHITE_COLOR, DEFAULT_TEXT_CHAR_SIZE, RESTART_TEXT);
+	const float restart_text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - restart_text.getGlobalBounds().width) / 2;
 
-	const float restart_text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - text->getGlobalBounds().width) / 2;
+	const float restart_text_y_pos = (static_cast<float>(DEFAULT_HEIGHT) - restart_text.getGlobalBounds().height) / 2;
 
-	const float restart_text_y_pos = (static_cast<float>(DEFAULT_HEIGHT) - text->getGlobalBounds().height) / 2;
+	restart_text.setPosition(restart_text_x_pos, restart_text_y_pos);
 
-	text->setPosition(restart_text_x_pos, restart_text_y_pos);
+	sf::Color restart_text_color = sf::Color::White;
 
-	sf::Text* apples_eaten_text = ui.MakeText(sf::Color::White, DEFAULT_TEXT_CHAR_SIZE, std::to_string(game.m_apples_eaten));
+	apples_eaten_text.setFont(font);
+	apples_eaten_text.setFillColor(sf::Color::White);
+	apples_eaten_text.setCharacterSize(DEFAULT_TEXT_CHAR_SIZE);
+	apples_eaten_text.setString(std::to_string(game.m_apples_eaten));
 
 	while (window.isOpen())
 	{
@@ -48,7 +59,7 @@ int main() {
 			game.m_apples_eaten++;
 		}
 		else if (game.SnakeCollidedWithItself() || game.SnakeIsOutOfBounds()) {
-			ui.FadeOut(text);
+			restart_text_color.a = 255;
 			game = Game();
 		}
 
@@ -60,18 +71,18 @@ int main() {
 
 		window.draw(game.m_apple);
 
-		if (text->getFillColor().a > 0) {
-			window.draw(*text);
+		if (restart_text_color.a > 0) {
+			restart_text_color.a -= 5;
+			restart_text.setFillColor(restart_text_color);
 		}
 
-		apples_eaten_text->setString(std::to_string(game.m_apples_eaten));
-		window.draw(*apples_eaten_text);
+		window.draw(restart_text);
+		
+		apples_eaten_text.setString(std::to_string(game.m_apples_eaten));
+		window.draw(apples_eaten_text);
 
 		window.display();
 	}
-
-	delete text;
-	delete apples_eaten_text;
 
 	return EXIT_SUCCESS;
 }
