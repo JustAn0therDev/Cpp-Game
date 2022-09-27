@@ -1,11 +1,12 @@
 #pragma once
 #include "Ui.hpp"
 #include <SFML/Graphics.hpp>
-#include "Globals.hpp"
 #include <thread>
 #include "Constants.hpp"
 #include <memory>
 #include <iostream>
+
+bool Ui::m_is_running_fade_animation;
 
 Ui::Ui() : m_font(sf::Font()) {
 	if (!m_font.loadFromFile(FONT_PATH)) {
@@ -15,8 +16,8 @@ Ui::Ui() : m_font(sf::Font()) {
 }
 
 void Ui::FadeOut(sf::Text* text) {
-	if (!g_is_running_fade_animation) {
-		g_is_running_fade_animation = true;
+	if (!m_is_running_fade_animation) {
+		m_is_running_fade_animation = true;
 
 		sf::Color color = sf::Color::White;
 
@@ -26,16 +27,16 @@ void Ui::FadeOut(sf::Text* text) {
 			text->setFillColor(color);
 		}
 
-		g_is_running_fade_animation = false;
+		m_is_running_fade_animation = false;
 	}
 }
 
-sf::Text* Ui::CreateText() {
+sf::Text* Ui::MakeText(const sf::Color& text_color, unsigned int char_size, const std::string& string) {
 	sf::Text* text = new sf::Text;
 	text->setFont(m_font);
-	text->setFillColor(DEFAULT_TRANSPARENT_WHITE_COLOR);
-	text->setCharacterSize(DEFAULT_TEXT_CHAR_SIZE);
-	text->setString(RESTART_TEXT);
+	text->setFillColor(text_color);
+	text->setCharacterSize(char_size);
+	text->setString(string);
 
 	return text;
 }

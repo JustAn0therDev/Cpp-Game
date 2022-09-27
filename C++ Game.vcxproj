@@ -152,7 +152,6 @@
     <ClInclude Include="Constants.hpp" />
     <ClInclude Include="Direction.hpp" />
     <ClInclude Include="Game.hpp" />
-    <ClInclude Include="Globals.hpp" />
     <ClInclude Include="Snake.hpp" />
     <ClInclude Include="SnakePart.hpp" />
     <ClInclude Include="Ui.hpp" />

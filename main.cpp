@@ -16,16 +16,11 @@ int main() {
 	Game game;
 	sf::Event event;
 	
-	sf::Text apples_eaten_text;
-
 	Ui ui;
 
-	sf::Text* text = ui.CreateText();
+	sf::Text* text = ui.MakeText(DEFAULT_TRANSPARENT_WHITE_COLOR, DEFAULT_TEXT_CHAR_SIZE, RESTART_TEXT);
 
-	apples_eaten_text.setFont(ui.m_font);
-	apples_eaten_text.setFillColor(sf::Color::White);
-	apples_eaten_text.setCharacterSize(DEFAULT_TEXT_CHAR_SIZE);
-	apples_eaten_text.setString(std::to_string(game.m_apples_eaten));
+	sf::Text* apples_eaten_text = ui.MakeText(sf::Color::White, DEFAULT_TEXT_CHAR_SIZE, std::to_string(game.m_apples_eaten));
 
 	const float restart_text_x_pos = (static_cast<float>(DEFAULT_WIDTH) - text->getGlobalBounds().width) / 2;
 
@@ -71,11 +66,14 @@ int main() {
 			window.draw(*text);
 		}
 
-		apples_eaten_text.setString(std::to_string(game.m_apples_eaten));
-		window.draw(apples_eaten_text);
+		apples_eaten_text->setString(std::to_string(game.m_apples_eaten));
+		window.draw(*apples_eaten_text);
 
 		window.display();
 	}
+
+	delete text;
+	delete apples_eaten_text;
 
 	return EXIT_SUCCESS;
 }
