@@ -4,7 +4,7 @@
 #include "Constants.hpp"
 
 Snake::Snake() : m_parts(std::vector<SnakePart>()), m_direction(Direction::Down) {
-	sf::RectangleShape first_part(sf::Vector2f(25.0f, 25.0f));
+	sf::RectangleShape first_part(sf::Vector2f(SNAKE_DIAMETER, SNAKE_DIAMETER));
 
 	first_part.setFillColor(sf::Color::Green);
 

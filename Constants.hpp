@@ -12,3 +12,4 @@ const int APPLE_DIAMETER = static_cast<int>(APPLE_RADIUS * 1.5f);
 const char RESTART_TEXT[11] = "restarting";
 const int DEFAULT_TEXT_CHAR_SIZE = 24;
 const char FONT_PATH[25] = "PressStart2P-Regular.ttf";
+const int SNAKE_DIAMETER = 25;

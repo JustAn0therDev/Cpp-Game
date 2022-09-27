@@ -43,6 +43,6 @@ bool Game::SnakeIsOutOfBounds() {
 
 	return snake_head_pos.x < 0 ||
 		snake_head_pos.y < 0 ||
-		snake_head_pos.x >= DEFAULT_WIDTH ||
-		snake_head_pos.y >= DEFAULT_HEIGHT;
+		(snake_head_pos.x + SNAKE_DIAMETER) >= DEFAULT_WIDTH ||
+		(snake_head_pos.y + SNAKE_DIAMETER) >= DEFAULT_HEIGHT;
 }
