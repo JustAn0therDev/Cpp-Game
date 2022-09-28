@@ -6,8 +6,5 @@ public:
 	sf::RectangleShape m_rect;
 	sf::Vector2f m_lastPosition;
 
-	SnakePart(sf::RectangleShape& rect) {
-		m_rect = rect;
-		m_lastPosition = rect.getPosition();
-	}
+	SnakePart(sf::RectangleShape& rect);
 };

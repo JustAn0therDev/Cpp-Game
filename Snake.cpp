@@ -4,11 +4,13 @@
 #include "Constants.hpp"
 
 Snake::Snake() : m_parts(std::vector<SnakePart>()), m_direction(Direction::Down) {
+	m_parts.reserve(150);
+
 	sf::RectangleShape first_part(sf::Vector2f(SNAKE_DIAMETER, SNAKE_DIAMETER));
 
 	first_part.setFillColor(sf::Color::Green);
 
-	m_parts.push_back(SnakePart(first_part));
+	m_parts.emplace_back(first_part);
 }
 
 void Snake::MoveSnakeByDirection() {
@@ -62,7 +64,7 @@ void Snake::ChangeDirection(const sf::Event& event) {
 }
 
 void Snake::AddPart() {
-	sf::RectangleShape new_snake_part(sf::Vector2f(25.0f, 25.0f));
+	sf::RectangleShape new_snake_part(sf::Vector2f(SNAKE_DIAMETER, SNAKE_DIAMETER));
 
 	new_snake_part.setFillColor(sf::Color::Green);
 
@@ -70,5 +72,5 @@ void Snake::AddPart() {
 
 	new_snake_part.setPosition(last_part.m_lastPosition);
 
-	m_parts.push_back(SnakePart(new_snake_part));
+	m_parts.emplace_back(new_snake_part);
 }
